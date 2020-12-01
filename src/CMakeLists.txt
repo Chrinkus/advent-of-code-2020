@@ -1,0 +1,1 @@
+add_executable(2001 2001.cpp)
