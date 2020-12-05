@@ -10,7 +10,7 @@ using Slopes = std::vector<std::pair<int,int>>;
 void count_trees(const std::pair<int,int>& slope, const Hill& hill, int& out)
 {
     auto [ right, down ] = slope;
-    int x = 0, y = 0;
+    std::size_t x = 0, y = 0;
     while (y < hill.size()) {
         if (hill[y][x] == '#')
             ++out;
@@ -24,9 +24,9 @@ int64_t get_tree_sum_prod(const Slopes& slopes, const Hill& hill)
     std::vector<int> res (slopes.size(), 0);
 
     std::vector<std::thread> vt;
-    for (auto i = 0; i < slopes.size(); ++i) {
-        vt.push_back(std::thread{count_trees, std::ref(slopes[i]),
-                std::ref(hill), std::ref(res[i])});
+    for (std::size_t i = 0; i != slopes.size(); ++i) {
+        vt.push_back(std::thread{count_trees, std::cref(slopes[i]),
+                std::cref(hill), std::ref(res[i])});
     }
     for (auto& t : vt)
         t.join();
