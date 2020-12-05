@@ -8,7 +8,9 @@ std::vector<int> parse_input()
     std::vector<int> vi;
     for (std::string s; std::cin >> s; ) {
         std::transform(std::begin(s), std::end(s), std::begin(s),
-                [](const auto& ch) { return (ch == 'F' || ch == 'L') 0 : 1; });
+                [](const auto& ch) {
+                    return (ch == 'F' || ch == 'L') ? '0' : '1';
+                });
         vi.push_back(std::stoi(s.substr(0, 7), nullptr, 2) * 8 +
                 std::stoi(s.substr(7), nullptr, 2));
     }
