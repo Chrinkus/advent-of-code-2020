@@ -3,9 +3,11 @@
 #include <string>
 #include <algorithm>
 
-std::vector<std::string> read_and_sort_input()
+using Declarations = std::vector<std::string>;
+
+auto read_and_sort_input()
 {
-    std::vector<std::string> d (1);     // start building from first
+    Declarations d (1);     // start building from first
     for (std::string line; std::getline(std::cin, line); ) {
         if (line.empty()) {
             d.push_back(line);
@@ -13,24 +15,24 @@ std::vector<std::string> read_and_sort_input()
             d.back() += line + ':';     // subtract ':' from counts later
         }
     }
-    for (auto& g : d)
-        std::sort(std::begin(g), std::end(g));
+    for (auto& group : d)
+        std::sort(std::begin(group), std::end(group));
     return d;
 }
 
-std::pair<std::size_t, std::size_t> do_work(const std::vector<std::string>& d)
+auto do_all_the_work(const Declarations& d)
 {
     std::size_t count1 = 0, count2 = 0;
     for (const auto& g : d) {
-        // part 1
+        // part 1 - count any 'yes'
         std::string buff;
         std::unique_copy(std::begin(g), std::end(g), std::back_inserter(buff));
         count1 += buff.size() - 1;
 
-        // part 2
+        // part 2 - count consensus 'yes'
         std::vector<std::size_t> cc;
-        for (const auto c : buff) {
-            cc.push_back(std::count(std::begin(g), std::end(g), c));
+        for (const auto ch : buff) {
+            cc.push_back(std::count(std::begin(g), std::end(g), ch));
         }
         count2 += std::count(std::begin(cc), std::end(cc), cc.front()) - 1;
     }
@@ -39,9 +41,9 @@ std::pair<std::size_t, std::size_t> do_work(const std::vector<std::string>& d)
 
 int main()
 {
-    std::vector<std::string> d = read_and_sort_input();
+    const Declarations d = read_and_sort_input();
 
-    auto [ part1, part2 ] = do_work(d);
+    const auto [ part1, part2 ] = do_all_the_work(d);
     std::cout << "Part 1: " << part1 << '\n';
     std::cout << "Part 2: " << part2 << '\n';
 }
