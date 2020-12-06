@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "Read_input.hpp"
 
 int get_mid(const std::string& s, int high, int low = 0)
 {
@@ -19,12 +20,7 @@ int get_mid(const std::string& s, int high, int low = 0)
 
 int main()
 {
-	std::cout << "Advent of Code Day 5\n";
-
-	std::vector<std::string> vs;
-	for (std::string s; std::cin >> s; ) {
-		vs.push_back(s);
-	}
+	const auto vs = read_data<std::string>();
 
 	std::vector<int> vi;
 	for (const auto& s : vs) {

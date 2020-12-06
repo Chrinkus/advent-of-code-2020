@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include "Read_input.hpp"
 
 int find_summed_pair_prod(const std::vector<int>& vi, int target)
 {
@@ -36,13 +37,7 @@ int64_t find_summed_trio_prod(const std::vector<int>& vi, int target)
 
 int main()
 {
-    std::vector<int> vi;
-
-    for (auto n = 0; std::cin >> n; ) {
-        vi.push_back(n);
-    }
-
-    std::sort(std::begin(vi), std::end(vi));
+    const auto vi = read_data_and_sort<int>();
 
     auto part1 = find_summed_pair_prod(vi, 2020);
     std::cout << "Part 1: " << part1 << '\n';
