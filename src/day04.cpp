@@ -66,7 +66,7 @@ bool check_hair_color(const std::string& data)
 {
     if (data.size() != 7 || data[0] != '#')
         return false;
-    for (auto i = 1; i < data.size(); ++i)
+    for (std::size_t i = 1; i != data.size(); ++i)
         if (!isxdigit(data[i]))
             return false;
     return true;
@@ -89,7 +89,6 @@ bool check_passport_id(const std::string& data)
 
 bool validate_entry(const std::string& entry)
 {
-    std::cout << "Made it here with: " << entry << '\n';
     Field f = get_field(entry.substr(0, 3));
     std::string val = entry.substr(4);
 
@@ -142,7 +141,6 @@ void Passport::check_fields()
 
 void Passport::check_data()
 {
-    std::cout << "Is there a space here >" << data << '\n';
     std::vector<std::string> entries;
     std::istringstream iss {data};
     for (std::string entry; std::getline(iss, entry, ' '); )
@@ -174,9 +172,9 @@ int main()
 {
     auto vpp = parse_passports();
 
-    auto part1 = std::count_if(std::begin(vpp), std::end(vpp),
+    const auto part1 = std::count_if(std::begin(vpp), std::end(vpp),
             [](const auto& pp) { return pp.has_valid_fields(); });
-    auto part2 = std::count_if(std::begin(vpp), std::end(vpp),
+    const auto part2 = std::count_if(std::begin(vpp), std::end(vpp),
             [](const auto& pp) { return pp.is_valid(); });
 
     std::cout << "Part 1: " << part1 << '\n';

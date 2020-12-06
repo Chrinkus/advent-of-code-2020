@@ -1,16 +1,7 @@
-add_executable(2001 2001.cpp)
-add_executable(2002 2002.cpp)
-add_executable(2003 2003.cpp)
-add_executable(2003p 2003_parallel.cpp)
-add_executable(2004 2004.cpp)
-add_executable(2005 2005.cpp)
-add_executable(2005a 2005_alt.cpp)
-add_executable(2006 2006.cpp)
-
-if(UNIX)
-    set(THREADS_PREFER_PTHREAD ON)
-    find_package(Threads REQUIRED)
-
-    target_link_libraries(2003p PRIVATE Threads::Threads)
-endif()
-
+# daily solutions
+add_executable(day01 day01.cpp)
+add_executable(day02 day02.cpp)
+add_executable(day03 day03.cpp)
+add_executable(day04 day04.cpp)
+add_executable(day05 day05.cpp)
+add_executable(day06 day06.cpp)
