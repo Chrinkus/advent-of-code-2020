@@ -3,13 +3,15 @@
 #include <string>
 #include <numeric>
 #include <thread>
+#include <array>
 
 using Hill = std::vector<std::string>;
-using Slopes = std::vector<std::pair<int,int>>;
+using Slope = std::pair<int,int>;
+using Slopes = std::array<Slope,5>;
 
-void count_trees(const std::pair<int,int>& slope, const Hill& hill, int& out)
+void count_trees(const Slope& slope, const Hill& hill, int& out)
 {
-    auto [ right, down ] = slope;
+    const auto [ right, down ] = slope;
     std::size_t x = 0, y = 0;
     while (y < hill.size()) {
         if (hill[y][x] == '#')
@@ -36,11 +38,12 @@ int64_t get_tree_sum_prod(const Slopes& slopes, const Hill& hill)
 
 int main()
 {
+    constexpr Slopes slopes { { {1,1}, {3,1}, {5,1}, {7,1}, {1,2} } };
+
     Hill hill;
     for (std::string line; std::getline(std::cin, line); )
         hill.push_back(line);
-    const Slopes slopes { {1,1}, {3,1}, {5,1}, {7,1}, {1,2} };
 
-    auto part2 = get_tree_sum_prod(slopes, hill);
+    const auto part2 = get_tree_sum_prod(slopes, hill);
     std::cout << "Part 2: " << part2 << '\n';
 }
