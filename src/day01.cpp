@@ -37,7 +37,7 @@ int64_t find_summed_trio_prod(const std::vector<int>& vi, int target)
 
 int main()
 {
-    const auto vi = read_data_and_sort<int>();
+    const auto vi = read_input_and_sort<int>();
 
     auto part1 = find_summed_pair_prod(vi, 2020);
     std::cout << "Part 1: " << part1 << '\n';

@@ -33,7 +33,7 @@ std::size_t get_tree_sum_prod(const Slopes& slopes, const Hill& hill)
 
 int main()
 {
-    const Hill hill = read_data<std::string>();
+    const Hill hill = read_input<std::string>();
     constexpr Slopes slopes { { {1,1}, {3,1}, {5,1}, {7,1}, {1,2} } };
 
     const auto part1 = count_trees(slopes[1], hill);

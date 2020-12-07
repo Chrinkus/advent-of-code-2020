@@ -20,7 +20,7 @@ int get_mid(const std::string& s, int high, int low = 0)
 
 int main()
 {
-	const auto vs = read_data<std::string>();
+	const auto vs = read_input<std::string>();
 
 	std::vector<int> vi;
 	for (const auto& s : vs) {
