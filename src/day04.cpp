@@ -180,7 +180,7 @@ std::pair<int,int> eval_passports(const std::vector<std::string>& vs)
 
 int main()
 {
-    const auto input = read_input_lines<std::string>();
+    const auto input = read_input_lines();
     const auto raw_p = combine_passport_data(input);
 
     const auto [ part1, part2 ] = eval_passports(raw_p);

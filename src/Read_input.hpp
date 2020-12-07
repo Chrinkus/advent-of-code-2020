@@ -14,14 +14,14 @@ auto read_input(std::istream& is = std::cin)
     return vd;
 }
 
-template<typename Data>
+// No template param, usually always std::string
 auto read_input_lines(std::istream& is = std::cin)
 {
-    std::vector<Data> vd;
-    for (Data d; std::getline(is, d); ) {
-        vd.push_back(d);
+    std::vector<std::string> vs;
+    for (std::string s; std::getline(is, s); ) {
+        vs.push_back(s);
     }
-    return vd;
+    return vs;
 }
 
 template<typename Data>

@@ -1,4 +1,5 @@
 # Alternate solutions
+add_executable(day02a day02_alt.cpp)
 add_executable(day03p day03_parallel.cpp)
 add_executable(day05a day05_alt.cpp)
 

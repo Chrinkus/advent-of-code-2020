@@ -43,7 +43,7 @@ auto do_all_the_work(const Declarations& d)
 
 int main()
 {
-    const auto input = read_input_lines<std::string>();
+    const auto input = read_input_lines();
     const Declarations decls = process_input(input);
 
     const auto [ part1, part2 ] = do_all_the_work(decls);
