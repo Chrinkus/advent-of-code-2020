@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <unordered_map>
 #include <set>
-#include <sstream>
 
 using Rules = std::vector<std::pair<int,std::string>>;
 using Rulebook = std::unordered_map<std::string,Rules>;
@@ -14,12 +13,12 @@ auto build_rulebook()
     Rulebook rb;
     for (std::string adj, clr, xx; std::cin >> adj >> clr; ) {
         auto key = adj + ' ' + clr;
-        std::vector<std::pair<int,std::string>> contents;
         std::cin >> xx >> xx;               // burn two words
 
         int qty;
+        Rules rules;
         while (std::cin >> qty >> adj >> clr >> xx) {
-            contents.push_back(std::make_pair(qty,adj + ' ' + clr));
+            rules.push_back(std::make_pair(qty,adj + ' ' + clr));
             if (xx.back() == '.')
                 break;
         }
@@ -27,13 +26,13 @@ auto build_rulebook()
             std::cin.clear();
             std::getline(std::cin, xx);     // discard rest of line
         } 
-        rb[key] = contents;
+        rb[key] = rules;
     }
     return rb;
 }
 
 void track_carriers(const Rulebook& rb, const std::string& bag_t,
-        std::set<std::string>& bags)
+        std::set<std::string_view>& bags)
 {
     for (const auto& [key,vals] : rb) {
         for (const auto& [q,b] : vals) {
@@ -45,7 +44,14 @@ void track_carriers(const Rulebook& rb, const std::string& bag_t,
     }
 }
 
-int count_carried(const Rulebook& rb, const std::string& bag_t)
+std::size_t count_carriers(const Rulebook& rb, const std::string& bag_t)
+{
+    std::set<std::string_view> bags;
+    track_carriers(rb, bag_t, bags);
+    return bags.size();
+}
+
+std::size_t count_carried(const Rulebook& rb, const std::string& bag_t)
 {
     auto count = 0;
     for (const auto& [ q, b ] : rb.at(bag_t)) {
@@ -59,10 +65,7 @@ int main()
     const auto my_bag = "shiny gold";
     const auto rulebook = build_rulebook();
 
-    std::set<std::string> bags;
-    track_carriers(rulebook, my_bag, bags);
-    const auto part1 = bags.size();
-
+    const auto part1 = count_carriers(rulebook, my_bag);
     const auto part2 = count_carried(rulebook, my_bag);
     std::cout << "Part 1: " << part1 << '\n';
     std::cout << "Part 2: " << part2 << '\n';
