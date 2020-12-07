@@ -2,16 +2,22 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <array>
 #include <sstream>
 #include <cctype>       // isdigit, isxdigit
+#include "Read_input.hpp"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 // Field definitions and validation
-enum class Field { byr, iyr, eyr, hgt, hcl, ecl, pid, cid };
-
-const std::vector<std::string> field_names {
-    "byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"//, "cid"
+constexpr std::array<std::string_view,7> field_names {
+    "byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"
 };
+
+constexpr std::array<std::string_view,7> eye_colors {
+    "amb", "blu", "brn", "gry", "grn", "hzl", "oth"
+};
+
+enum class Field { byr, iyr, eyr, hgt, hcl, ecl, pid, cid };
 
 Field get_field(const std::string& s)
 {
@@ -22,10 +28,6 @@ Field get_field(const std::string& s)
     else
         return static_cast<Field>(std::distance(std::begin(field_names), it));
 }
-
-const std::vector<std::string> eye_colors {
-    "amb", "blu", "brn", "gry", "grn", "hzl", "oth"
-};
 
 bool check_birth_year(const std::string& data)
 {
@@ -101,8 +103,8 @@ bool validate_entry(const std::string& entry)
         case Field::ecl:    return check_eye_color(val);
         case Field::pid:    return check_passport_id(val);
         case Field::cid:    return true;
-        default:            return false;
     }
+    return false;
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -152,31 +154,36 @@ void Passport::check_data()
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 // Input processing and main()
-std::vector<Passport> parse_passports()
+auto combine_passport_data(const std::vector<std::string>& input)
 {
-    std::vector<Passport> passports;
-    std::string line, buffer;
-    do {
-        if (line.empty() && !buffer.empty()) {
-            passports.push_back(Passport{buffer});
-            buffer.clear();
-        } else if (!line.empty()) {
-            buffer += line + ' ';
+    std::vector<std::string> vs { "" };
+    for (const auto& s : input) {
+        if (s.empty()) {
+            vs.push_back(s);
+        } else {
+            vs.back() += s + ' ';
         }
-    } while (std::getline(std::cin, line));
-    passports.push_back(Passport{buffer});
-    return passports;
+    }
+    return vs;
+}
+
+std::pair<int,int> eval_passports(const std::vector<std::string>& vs)
+{
+    int count1 = 0, count2 = 0;
+    for (const auto& s : vs) {
+        Passport p {s};
+        count1 += p.has_valid_fields();
+        count2 += p.is_valid();
+    }
+    return std::make_pair(count1, count2);
 }
 
 int main()
 {
-    auto vpp = parse_passports();
+    const auto input = read_input_lines<std::string>();
+    const auto raw_p = combine_passport_data(input);
 
-    const auto part1 = std::count_if(std::begin(vpp), std::end(vpp),
-            [](const auto& pp) { return pp.has_valid_fields(); });
-    const auto part2 = std::count_if(std::begin(vpp), std::end(vpp),
-            [](const auto& pp) { return pp.is_valid(); });
-
+    const auto [ part1, part2 ] = eval_passports(raw_p);
     std::cout << "Part 1: " << part1 << '\n';
     std::cout << "Part 2: " << part2 << '\n';
 }
