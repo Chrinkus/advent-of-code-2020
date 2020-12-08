@@ -12,6 +12,7 @@ auto build_rulebook()
 {
     Rulebook rb;
     for (std::string adj, clr, xx; std::cin >> adj >> clr >> xx >> xx; ) {
+        const auto key = adj + ' ' + clr;
         int qty;
         Rules rules;
         while (std::cin >> qty >> adj >> clr >> xx) {
@@ -23,7 +24,7 @@ auto build_rulebook()
             std::cin.clear();
             std::getline(std::cin, xx);     // discard rest of line
         } 
-        rb[adj + ' ' + clr] = rules;
+        rb[key] = rules;
     }
     return rb;
 }
