@@ -5,14 +5,15 @@
 #include "Read_input.hpp"
 
 using Index = std::size_t;      // I really dislike typing this
+using Value = std::uint64_t;    // Also this..
 
-int find_weakness(const std::vector<int>& vi, const int preamble = 25)
+Value find_weakness(const std::vector<Value>& vi, const Value preamble = 25)
 {
     bool found_pair = false;
     for (Index i = preamble, j = 0, k = 1; i < vi.size(); ++i) {
         for (j = i - preamble; j < i - 1; ++j) {
             for (k = j + 1; k < i; ++k) {
-                if ((found_pair = vi[i] == vi[j] + vi[k]))
+                if ((found_pair = vi[i] == vi[j] + vi[k]))  // DWI
                     break;
             }
             if (found_pair)
@@ -21,9 +22,10 @@ int find_weakness(const std::vector<int>& vi, const int preamble = 25)
         if (!found_pair)
             return vi[i];
     }
+    return 0;
 }
 
-int break_encryption(const std::vector<int>& vi, const int target)
+Value break_encryption(const std::vector<Value>& vi, const Value target)
 {
     for (Index gap = 1; gap < vi.size(); ++gap) {
         for (auto it = std::begin(vi), jt = std::next(it, gap);
@@ -35,11 +37,12 @@ int break_encryption(const std::vector<int>& vi, const int target)
                     }
                 }
     }
+    return 0;
 }
 
 int main()
 {
-    const auto input = read_input<int>();
+    const auto input = read_input<Value>();
 
     const auto part1 = find_weakness(input, 25);
     const auto part2 = break_encryption(input, part1);
