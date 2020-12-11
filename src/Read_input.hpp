@@ -1,9 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
+#include <iostream>     // needed for reading
+#include <string>       // some platforms need this
+#include <vector>       // file sizes are usually unknown
+#include <algorithm>    // for sorting
 
 template<typename Data>
 auto read_input(std::istream& is = std::cin)
