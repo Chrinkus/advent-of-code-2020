@@ -3,10 +3,30 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>               // for timing solution
+#include <array>
 
 #include "Read_input.hpp"       // simple, handy reader
 
 using Index = std::int64_t;
+
+constexpr std::array<std::pair<int,int>,8> dirs {
+    { {-1,-1}, {0,-1}, {1,-1}, {-1,0}, {1,0}, {-1,1}, {0,1}, {1,1} }
+};
+
+auto count_adjacents_2(const std::vector<std::string>& vs, const Index x,
+        const Index y, const int limit = 4)
+{
+    auto count = 0;
+    for (const auto& [ dx, dy ] : dirs) {
+        Index xx = x + dx, yy  = y + dy;
+        if (0 <= xx && xx < vs.front().size() && 0 <= yy && yy < vs.size())
+            if (vs[yy][xx] == '#')
+                ++count;
+        if (count == limit)
+            break;
+    }
+    return count;
+}
 
 auto count_adjacents(const std::vector<std::string>& vs, const Index x,
         const Index y)
@@ -110,6 +130,30 @@ auto count_extended_adjacents_2(const std::vector<std::string>& vs,
     return count;
 }
 
+auto count_extended_adjacents_3(const std::vector<std::string>& vs,
+        const Index x, const Index y, const int limit = 5)
+{
+    auto count = 0;
+    const auto dimx = vs.front().size();
+    const auto dimy = vs.size();
+    for (const auto& [ dx, dy ] : dirs) {
+        for (Index xx = x + dx, yy = y + dy;
+                0 <= xx && xx < dimx && 0 <= yy && yy < dimy;
+                xx += dx, yy += dy) {
+            auto ch = vs[yy][xx];
+            if (ch == 'L')
+                break;
+            else if (ch == '#') {
+                ++count;
+                if (count == limit)
+                    return count;
+                break;
+            }
+        }
+    }
+    return count;
+}
+
 auto advance_round(const std::vector<std::string>& vs)
 {
     std::vector<std::string> vnext;
@@ -122,13 +166,13 @@ auto advance_round(const std::vector<std::string>& vs)
             switch (ch) {
             case '.': break;        // floor, skip this location
             case 'L':
-                if (count_adjacents(vs, x, y) == 0) {
+                if (count_adjacents_2(vs, x, y) == 0) {
                     vnext[y][x] = '#';
                     changed = true;
                 }
                 break;
             case '#':
-                if (count_adjacents(vs, x, y) >= 4) {
+                if (count_adjacents_2(vs, x, y) >= 4) {
                     vnext[y][x] = 'L';
                     changed = true;
                 }
@@ -150,13 +194,13 @@ auto advance_round_extended(const std::vector<std::string>& vs)
             switch (ch) {
             case '.': break;        // floor, skip this location
             case 'L':
-                if (count_extended_adjacents(vs, x, y) == 0) {
+                if (count_extended_adjacents_3(vs, x, y) == 0) {
                     vnext[y][x] = '#';
                     changed = true;
                 }
                 break;
             case '#':
-                if (count_extended_adjacents(vs, x, y) >= 5) {
+                if (count_extended_adjacents_3(vs, x, y) >= 5) {
                     vnext[y][x] = 'L';
                     changed = true;
                 }
