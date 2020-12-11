@@ -1,3 +1,9 @@
+// 
+// Game of Life problem
+//
+// These are difficult for me so I'm keeping all of the initial code in the
+// file for posterity.
+//
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,26 +19,14 @@ constexpr std::array<std::pair<int,int>,8> dirs {
     { {-1,-1}, {0,-1}, {1,-1}, {-1,0}, {1,0}, {-1,1}, {0,1}, {1,1} }
 };
 
-auto count_adjacents_2(const std::vector<std::string>& vs, const Index x,
-        const Index y, const int limit = 4)
-{
-    auto count = 0;
-    for (const auto& [ dx, dy ] : dirs) {
-        Index xx = x + dx, yy  = y + dy;
-        if (0 <= xx && xx < vs.front().size() && 0 <= yy && yy < vs.size())
-            if (vs[yy][xx] == '#')
-                ++count;
-        if (count == limit)
-            break;
-    }
-    return count;
-}
-
-auto count_adjacents(const std::vector<std::string>& vs, const Index x,
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+// Part 1
+auto count_adjacents_1(const std::vector<std::string>& vs, const Index x,
         const Index y)
+    // somehow faster than 2
 {
     auto count = 0;
-    const auto l = x - 1, r = x + 1, u = y - 1, d = y + 1;
+    const Index l = x - 1, r = x + 1, u = y - 1, d = y + 1;
     if (l >= 0) {                   // check left side
         if (u >= 0 && vs[u][l] == '#')          ++count;    // top left
         if (vs[y][l] == '#')                    ++count;    // left
@@ -49,21 +43,57 @@ auto count_adjacents(const std::vector<std::string>& vs, const Index x,
     return count;
 }
 
-auto found_occupied(const std::vector<std::string>& vs,
-        Index x, Index y, const int dx, const int dy)
+/*
+auto count_adjacents_2(const std::vector<std::string>& vs, const Index x,
+        const Index y, const int limit = 4)
+    // the slow one..?
 {
-    x += dx; y += dy;
-    while ((0 <= x && x < vs.front().size()) &&
-            (0 <= y && y < vs.size())) {
-        auto ch = vs[y][x];
-        if (ch == 'L') return 0;
-        if (ch == '#') return 1;
-        x += dx; y += dy;
+    auto count = 0;
+    for (const auto& [ dx, dy ] : dirs) {
+        Index xx = x + dx, yy  = y + dy;
+        if (0 <= xx && xx < vs.front().size() && 0 <= yy && yy < vs.size())
+            if (vs[yy][xx] == '#')
+                ++count;
+        if (count == limit)
+            break;
     }
-    return 0;
+    return count;
+}
+*/
+
+auto advance_round(const std::vector<std::string>& vs)
+{
+    std::vector<std::string> vnext;
+    std::copy(std::begin(vs), std::end(vs), std::back_inserter(vnext));
+
+    bool changed = false;
+    for (Index y = 0; y < vs.size(); ++y) {
+        for (Index x = 0; x < vs.front().size(); ++x) {
+            const auto ch = vs[y][x];
+            switch (ch) {
+            case '.': break;        // floor, skip this location
+            case 'L':
+                if (count_adjacents_1(vs, x, y) == 0) {
+                    vnext[y][x] = '#';
+                    changed = true;
+                }
+                break;
+            case '#':
+                if (count_adjacents_1(vs, x, y) >= 4) {
+                    vnext[y][x] = 'L';
+                    changed = true;
+                }
+                break;
+            }
+        }
+    }
+    return std::make_pair(changed, vnext);
 }
 
-auto count_extended_adjacents(const std::vector<std::string>& vs,
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+// Part 2
+/*
+auto count_extended_adjacents_1(const std::vector<std::string>& vs,
         const Index x, const Index y)
     // excessively verbose, runs a little quicker
 {
@@ -114,6 +144,20 @@ auto count_extended_adjacents(const std::vector<std::string>& vs,
     return count;
 }
 
+auto found_occupied(const std::vector<std::string>& vs,
+        Index x, Index y, const int dx, const int dy)
+{
+    x += dx; y += dy;
+    while ((0 <= x && x < vs.front().size()) &&
+            (0 <= y && y < vs.size())) {
+        auto ch = vs[y][x];
+        if (ch == 'L') return 0;
+        if (ch == '#') return 1;
+        x += dx; y += dy;
+    }
+    return 0;
+}
+
 auto count_extended_adjacents_2(const std::vector<std::string>& vs,
         const Index x, const Index y)
     // more concise, runs slower
@@ -129,16 +173,19 @@ auto count_extended_adjacents_2(const std::vector<std::string>& vs,
     count += found_occupied(vs, x, y, -1, 1);   // bottom left
     return count;
 }
+*/
 
 auto count_extended_adjacents_3(const std::vector<std::string>& vs,
         const Index x, const Index y, const int limit = 5)
+    // runs a little slower than 1 but is easier to reason about
 {
     auto count = 0;
-    const auto dimx = vs.front().size();
-    const auto dimy = vs.size();
+    const auto max_x = vs.front().size();
+    const auto max_y = vs.size();
     for (const auto& [ dx, dy ] : dirs) {
+        // before accessing elements, ensure the "new" x and y are inbounds
         for (Index xx = x + dx, yy = y + dy;
-                0 <= xx && xx < dimx && 0 <= yy && yy < dimy;
+                0 <= xx && xx < max_x && 0 <= yy && yy < max_y;
                 xx += dx, yy += dy) {
             auto ch = vs[yy][xx];
             if (ch == 'L')
@@ -152,35 +199,6 @@ auto count_extended_adjacents_3(const std::vector<std::string>& vs,
         }
     }
     return count;
-}
-
-auto advance_round(const std::vector<std::string>& vs)
-{
-    std::vector<std::string> vnext;
-    std::copy(std::begin(vs), std::end(vs), std::back_inserter(vnext));
-
-    bool changed = false;
-    for (Index y = 0; y < vs.size(); ++y) {
-        for (Index x = 0; x < vs.front().size(); ++x) {
-            const auto ch = vs[y][x];
-            switch (ch) {
-            case '.': break;        // floor, skip this location
-            case 'L':
-                if (count_adjacents_2(vs, x, y) == 0) {
-                    vnext[y][x] = '#';
-                    changed = true;
-                }
-                break;
-            case '#':
-                if (count_adjacents_2(vs, x, y) >= 4) {
-                    vnext[y][x] = 'L';
-                    changed = true;
-                }
-                break;
-            }
-        }
-    }
-    return std::make_pair(changed, vnext);
 }
 
 auto advance_round_extended(const std::vector<std::string>& vs)
@@ -211,6 +229,8 @@ auto advance_round_extended(const std::vector<std::string>& vs)
     return std::make_pair(changed, vnext);
 }
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+// Counting occupied seats
 auto count_occupied(const std::vector<std::string>& vs)
 {
     auto count = 0;
@@ -241,6 +261,7 @@ auto advance_till_stable_2(std::vector<std::string> vs)
     }
 }
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 int main()
 {
     // start of timing
