@@ -5,6 +5,7 @@
 #include <chrono>               // for timing solution
 
 #include "Read_input.hpp"       // simple, handy reader
+#include "Timer.hpp"            // for timing solution
 
 // placeholder function to allow boilerplate.cpp to compile
 auto solve_problem()
@@ -16,8 +17,7 @@ auto solve_problem()
 
 int main()
 {
-    // start of timing
-    auto start = std::chrono::steady_clock::now();
+    Timer t {};         // start of timing
 
     const auto input = read_input_lines();
 
@@ -26,8 +26,5 @@ int main()
     std::cout << "Part 1: " << part1 << '\n';
     std::cout << "Part 2: " << part2 << '\n';
 
-    // end of timing and report
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> time = end - start;
-    std::cout << "Time: " << time.count() << '\n';
+    t.end();            // end of timing and report
 }
