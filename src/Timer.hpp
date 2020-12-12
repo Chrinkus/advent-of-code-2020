@@ -15,14 +15,14 @@ public:
     Timer(const bool start_now = true) { if (start_now) start(); }
 
     void start() { start_stamp = Clock::now(); }
-    void end() { stamp("Total"); print_log(); }
+    void end(const int width) { stamp("Total"); print_log(width); }
 
     void stamp(const std::string& label)
     {
         log.push_back(std::make_pair(label, Clock::now()));
     }
 
-    void print_log() const;
+    void print_log(const int width = 8) const;
 
 private:
 
@@ -30,11 +30,12 @@ private:
     std::vector<std::pair<std::string,Time_point>> log;
 };
 
-void Timer::print_log() const
+void Timer::print_log(const int width) const
 {
     for (const auto& [ l, t ] : log) {
-        std::cout << std::setw(8) << l << ":\t"
-                  << duration_cast<microseconds>(t - start_stamp).count()
-                  << " us\n";
+
+        std::cout << std::left << std::setw(width) << l << ":\t"
+                  << duration<double, std::milli>(t - start_stamp).count()
+                  << " ms\n";
     }
 }

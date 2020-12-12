@@ -2,10 +2,10 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <chrono>               // for timing solution
 
 #include "Read_input.hpp"       // simple, handy reader
 #include "Timer.hpp"            // for timing solution
+constexpr int WIDTH = 8;        // for output alignment
 
 // placeholder function to allow boilerplate.cpp to compile
 auto solve_problem()
@@ -23,8 +23,8 @@ int main()
 
     const auto part1 = input.size();            // handy
     const auto part2 = solve_problem();
-    std::cout << "Part 1: " << part1 << '\n';
-    std::cout << "Part 2: " << part2 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 1: " << part1 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 2: " << part2 << '\n';
 
-    t.end();            // end of timing and report
+    t.end(WIDTH);       // end of timing, print report
 }

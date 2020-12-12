@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <chrono>               // for timing solution
 
 #include "Timer.hpp"            // for timing solution
+constexpr int WIDTH = 8;        // for output alignment
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 enum class Facing { east, north, west, south, size };
@@ -145,9 +145,9 @@ int main()
         ferry_2.process_way_ins(instruction);
     }
     const auto part1 = ferry_1.man_dist();
-    std::cout << "Part 1: " << part1 << '\n';
     const auto part2 = ferry_2.man_dist();
-    std::cout << "Part 2: " << part2 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 1" << ':' << part1 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 2" << ':' << part2 << '\n';
     
-    t.end();            // end of timing and report
+    t.end(WIDTH);       // end of timing, print report
 }

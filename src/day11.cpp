@@ -8,10 +8,11 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <chrono>               // for timing solution
 #include <array>
 
 #include "Read_input.hpp"       // simple, handy reader
+#include "Timer.hpp"            // for timing solution
+constexpr int WIDTH = 8;        // for output alignment
 
 using Index = std::int64_t;
 
@@ -264,18 +265,14 @@ auto advance_till_stable_2(std::vector<std::string> vs)
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 int main()
 {
-    // start of timing
-    auto start = std::chrono::steady_clock::now();
+    Timer t {};         // start timing
 
     const auto seating_area = read_input_lines();
 
     const auto part1 = advance_till_stable_1(seating_area);
     const auto part2 = advance_till_stable_2(seating_area);
-    std::cout << "Part 1: " << part1 << '\n';
-    std::cout << "Part 2: " << part2 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 1: " << part1 << '\n';
+    std::cout << std::setw(WIDTH) << "Part 2: " << part2 << '\n';
 
-    // end of timing and report
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> time = end - start;
-    std::cout << "Time: " << time.count() << '\n';
+    t.end(WIDTH);       // end of timing, print report
 }
