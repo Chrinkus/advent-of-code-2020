@@ -15,6 +15,9 @@ constexpr int WIDTH = 5;        // for output alignment
 using Index = std::size_t;
 using Bigint = std::uint64_t;
 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+constexpr std::uint16_t BITS = 36;
+
 enum class Ins { mask, mem };
 
 struct Mask {
@@ -22,19 +25,21 @@ struct Mask {
 };
 
 struct Mem {
-    std::bitset<36> index = 0;
-    std::bitset<36> value = 0;
+    std::bitset<BITS> index = 0;
+    std::bitset<BITS> value = 0;
 };
 
 struct Instruction {
     Ins ins;
     std::variant<Mask,Mem> data;
 };
-
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 auto parse_input(const std::vector<std::string>& vs)
+    // Windows does NOT like this function..
 {
-    static const std::regex mask_pat {R"(mask = ([X01]{36}))"};
-    static const std::regex mem_pat {R"(mem\[(\d+)] = (\d+))"};
+    // Magic number in the regex 
+    static const std::regex mask_pat {R"(^mask = ([X01]{36})$)"};
+    static const std::regex mem_pat {R"(^mem\[(\d+)] = (\d+)$)"};
 
     std::vector<Instruction> vins;
 
@@ -59,17 +64,26 @@ auto parse_input(const std::vector<std::string>& vs)
     }
     return vins;
 }
-
-Bigint memory_sum(const std::vector<Instruction>& vins)
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Bigint memory_sum(const std::unordered_map<Index,Bigint>& memory)
 {
-    std::string mask;
+    return std::accumulate(std::begin(memory), std::end(memory), Bigint{},
+            [](const auto& a, const auto& b) {
+                const auto [i,v] = b;
+                return a + v;
+            });
+}
+
+Bigint decoder_v1(const std::vector<Instruction>& vins)
+{
     std::unordered_map<Index,Bigint> memory;
+    std::string mask;
     for (const auto& ins : vins) {
         if (ins.ins == Ins::mask) {
             mask = std::get<Mask>(ins.data).mask;
         } else {
             const auto& index = std::get<Mem>(ins.data).index;
-            std::bitset<36> value = std::get<Mem>(ins.data).value;
+            std::bitset<BITS> value = std::get<Mem>(ins.data).value;
             for (Index i = 0, j = mask.size() - 1; i < mask.size(); ++i, --j) {
                 switch (mask[i]) {
                 case '1':   value[j] = true;    break;
@@ -80,32 +94,82 @@ Bigint memory_sum(const std::vector<Instruction>& vins)
             memory[index.to_ullong()] = value.to_ullong();
         }
     }
-
-    return std::accumulate(std::begin(memory), std::end(memory), 0,
-            [](const auto& a, const auto& b) {
-                const auto [i,v] = b;
-                return a + v;
-            });
+    return memory_sum(memory);
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+// Part 2
+auto generate_bit_variations(std::bitset<BITS> bs, Index i,
+        const std::vector<Index>& vi, std::vector<std::bitset<BITS>>& vb)
+{
+    if (i == vi.size()) {
+        vb.push_back(bs);
+        return;
+    }
+    bs[vi[i]] = 0;
+    generate_bit_variations(bs, i+1, vi, vb);
+    bs[vi[i]] = 1;
+    generate_bit_variations(bs, i+1, vi, vb);
 }
 
+auto get_all_masks(const std::string& mask_pat)
+{
+    std::vector<std::bitset<BITS>> vbm;
+    // Identify the 'X' bits
+    std::vector<Index> vpos;
+    for (Index i = 0, j = mask_pat.size() - 1; i < mask_pat.size(); ++i, --j)
+        if (mask_pat[i] == 'X')
+            vpos.push_back(j);
+
+    generate_bit_variations(std::bitset<BITS>{0}, Index{}, vpos, vbm);
+
+    return vbm;
+}
+
+auto prep_addr(std::bitset<BITS> addr, const std::string& mask)
+    // if a mask bit is 'X' set the corresponding addr bit to 0
+    // if a mask bit is '1' set the corresponding addr bit to 1
+{
+    for (Index i = 0, j = mask.size() - 1; i < mask.size(); ++i, --j)
+        switch (mask[i]) {
+        case 'X':   addr[j] = 0;    break;
+        case '1':   addr[j] = 1;    break;
+        }
+
+    return addr;
+}
+
+auto decoder_v2(const std::vector<Instruction>& vins)
+{
+    std::unordered_map<Index,Bigint> memory;
+    std::string mask;
+    std::vector<std::bitset<BITS>> vmasks;
+    for (const auto& ins : vins) {
+        if (ins.ins == Ins::mask) {     // work with Mask
+            vmasks.clear();
+            mask = std::get<Mask>(ins.data).mask;
+            vmasks = get_all_masks(mask);
+        } else {                        // work with Mem
+            const auto& [index,value] = std::get<Mem>(ins.data);
+            const auto bare = prep_addr(index, mask);
+
+            for (const auto& m : vmasks) {
+                auto addr = m | bare;
+                memory[addr.to_ullong()] = value.to_ullong();
+            }
+        }
+    }
+    return memory_sum(memory);
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 int main()
 {
     Timer t {};         // start of timing
 
     const auto input = read_input_lines();
-    for (const auto& i : input)
-        std::cout << i << "END\n";
     const auto program = parse_input(input);
-    for (const auto& line : program) {
-        if (line.ins == Ins::mask)
-            std::cout << std::get<Mask>(line.data).mask << '\n';
-        else
-            std::cout << std::get<Mem>(line.data).index.to_ullong() << ' '
-                      << std::get<Mem>(line.data).value << '\n';
-    }
 
-    const auto part1 = memory_sum(program);
-    const auto part2 = input.size() << '\n';
+    const auto part1 = decoder_v1(program);
+    const auto part2 = decoder_v2(program);
     std::cout << std::setw(WIDTH) << "Part 1: " << part1 << '\n';
     std::cout << std::setw(WIDTH) << "Part 2: " << part2 << '\n';
 
