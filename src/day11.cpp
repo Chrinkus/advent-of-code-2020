@@ -14,7 +14,7 @@
 #include "Timer.hpp"            // for timing solution
 constexpr int WIDTH = 8;        // for output alignment
 
-using Index = std::int64_t;
+using Index = std::size_t;
 
 constexpr std::array<std::pair<int,int>,8> dirs {
     { {-1,-1}, {0,-1}, {1,-1}, {-1,0}, {1,0}, {-1,1}, {0,1}, {1,1} }
@@ -22,13 +22,14 @@ constexpr std::array<std::pair<int,int>,8> dirs {
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 // Part 1
-auto count_adjacents_1(const std::vector<std::string>& vs, const Index x,
-        const Index y)
-    // somehow faster than 2
+/*
+auto count_adjacents_1(const std::vector<std::string>& vs, const Index& x,
+        const Index& y)
+    // ERROR: bad code will not run. Kept for future review of problem type.
 {
     auto count = 0;
     const Index l = x - 1, r = x + 1, u = y - 1, d = y + 1;
-    if (l >= 0) {                   // check left side
+    if (0 <= l && l < vs.front().size()) {                  // check left side
         if (u >= 0 && vs[u][l] == '#')          ++count;    // top left
         if (vs[y][l] == '#')                    ++count;    // left
         if (d < vs.size() && vs[d][l] == '#')   ++count;    // bottom left
@@ -38,16 +39,16 @@ auto count_adjacents_1(const std::vector<std::string>& vs, const Index x,
         if (vs[y][r] == '#')                    ++count;    // right
         if (d < vs.size() && vs[d][r] == '#')   ++count;    // bottom right
     }
-    if (u >= 0 && vs[u][x] == '#')              ++count;    // top
+    if (0 <= u && u < vs.size() && vs[u][x] == '#') ++count;// top
+    //if (u >= 0 && vs[u][x] == '#')              ++count;    // top
     if (d < vs.size() && vs[d][x] == '#')       ++count;    // bottom
 
     return count;
 }
+*/
 
-/*
-auto count_adjacents_2(const std::vector<std::string>& vs, const Index x,
-        const Index y, const int limit = 4)
-    // the slow one..?
+auto count_adjacents_2(const std::vector<std::string>& vs, const Index& x,
+        const Index& y, const int limit = 4)
 {
     auto count = 0;
     for (const auto& [ dx, dy ] : dirs) {
@@ -60,7 +61,6 @@ auto count_adjacents_2(const std::vector<std::string>& vs, const Index x,
     }
     return count;
 }
-*/
 
 auto advance_round(const std::vector<std::string>& vs)
 {
@@ -74,13 +74,13 @@ auto advance_round(const std::vector<std::string>& vs)
             switch (ch) {
             case '.': break;        // floor, skip this location
             case 'L':
-                if (count_adjacents_1(vs, x, y) == 0) {
+                if (count_adjacents_2(vs, x, y) == 0) {
                     vnext[y][x] = '#';
                     changed = true;
                 }
                 break;
             case '#':
-                if (count_adjacents_1(vs, x, y) >= 4) {
+                if (count_adjacents_2(vs, x, y) >= 4) {
                     vnext[y][x] = 'L';
                     changed = true;
                 }
@@ -264,7 +264,7 @@ auto advance_till_stable_2(std::vector<std::string> vs)
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 int main()
-{
+try {
     Timer t {};         // start timing
 
     const auto seating_area = read_input_lines();
@@ -275,4 +275,8 @@ int main()
     std::cout << std::setw(WIDTH) << "Part 2: " << part2 << '\n';
 
     t.end(WIDTH);       // end of timing, print report
+}
+catch(std::exception& e) {
+    std::cerr << "Exception: " << e.what() << '\n';
+    return 1;
 }

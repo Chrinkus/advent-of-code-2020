@@ -13,7 +13,8 @@ Value find_weakness(const std::vector<Value>& vi, const Value preamble = 25)
     for (Index i = preamble, j = 0, k = 1; i < vi.size(); ++i) {
         for (j = i - preamble; j < i - 1; ++j) {
             for (k = j + 1; k < i; ++k) {
-                if ((found_pair = vi[i] == vi[j] + vi[k]))  // DWI
+                found_pair = vi[i] == vi[j] + vi[k];
+                if (found_pair)
                     break;
             }
             if (found_pair)
