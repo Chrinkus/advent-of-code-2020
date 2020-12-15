@@ -15,7 +15,7 @@ public:
     Timer(const bool start_now = true) { if (start_now) start(); }
 
     void start() { start_stamp = Clock::now(); }
-    void end(const int width) { stamp("Total"); print_log(width); }
+    void end(const int width) { stamp("Time"); print_log(width); }
 
     void stamp(const std::string& label)
     {
