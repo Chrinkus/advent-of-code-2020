@@ -39,7 +39,7 @@ auto parse_input(const std::vector<std::string>& vs)
 {
     // Magic number in the regex 
     static const std::regex mask_pat {R"(^mask = ([X01]{36})$)"};
-    static const std::regex mem_pat {R"(^mem\[(\d+)] = (\d+)$)"};
+    static const std::regex mem_pat {R"(^mem\[(\d+)\] = (\d+)$)"};
 
     std::vector<Instruction> vins;
 
