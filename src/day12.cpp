@@ -7,7 +7,7 @@
 constexpr int WIDTH = 8;        // for output alignment
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-enum class Facing { east, north, west, south, size };
+enum class Facing { east, north, west, south };
 
 Facing operator++(Facing& f)
 {

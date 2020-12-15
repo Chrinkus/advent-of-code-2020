@@ -30,7 +30,7 @@ Value break_encryption(const std::vector<Value>& vi, const Value target)
     for (Index gap = 1; gap < vi.size(); ++gap) {
         for (auto it = std::begin(vi), jt = std::next(it, gap);
                 jt < std::end(vi); ++it, ++jt) {
-                    if (std::accumulate(it, std::next(jt), 0) == target) {
+                    if (std::accumulate(it, std::next(jt), Value{}) == target) {
                         auto min = *std::min_element(it, std::next(jt));
                         auto max = *std::max_element(it, std::next(jt));
                         return min + max;

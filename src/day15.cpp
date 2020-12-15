@@ -23,7 +23,7 @@ auto read_starting_numbers()
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 // Part 1 and 2 use the same solution. Version 1 is brute-force-y.
-auto play_until_n_v1(std::vector<Index> vi, const int n)
+auto play_until_n_v1(std::vector<Index> vi, const Index n)
 {
     for (auto x = vi.back(); vi.size() < n; x = vi.back()) {
         auto rit = std::find(std::next(std::rbegin(vi)), std::rend(vi), x);
