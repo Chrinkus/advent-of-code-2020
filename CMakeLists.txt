@@ -10,7 +10,7 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-include_directories(src)
+include_directories(include)
 
 add_subdirectory(src)
 add_subdirectory(alt)
