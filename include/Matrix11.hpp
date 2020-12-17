@@ -803,5 +803,95 @@ template<class T, int D> Matrix<T,D> operator^(const Matrix<T,D>& m, const T& c)
 
 //-----------------------------------------------------------------------------
 
+template<class T> class Matrix<T,4> : public Matrix_base<T> {
+private:
+    const Index d1;
+    const Index d2;
+    const Index d3;
+    const Index d4;
+
+protected:
+    // for use by Row:
+    Matrix(Index n1, Index n2, Index n3, Index n4, T* p)
+        : Matrix_base<T>{n1*n2*n3*n4,p},
+        d1{n1}, d2{n2}, d3{n3}, d4{n4}
+    {
+        // std::cerr << "construct 4D Matrix from data\n";
+    }
+
+public:
+    Matrix(Index n1, Index n2, Index n3, Index n4)
+        : Matrix_base<T>{n1*n2*n3*n4}, d1{n1}, d2{n2}, d3{n3}, d4{n4} { }
+
+    Matrix(const Matrix& a)
+        : Matrix_base<T>{a.size(), 0}, d1{a.d1}, d2{a.d2}, d3{a.d3}, d4{a.d4}
+    {
+        this->base_copy(a);
+    }
+
+    Matrix& operator=(const Matrix& a)
+    {
+        if (d1!=a.d1 || d2!=a.d2 || d3!=a.d3 || d4!=a.d4)
+            error("length error in 3D =");
+        this->base_assign(a);
+        return *this;
+    }
+
+    ~Matrix() { }
+
+    Index dim1() const { return d1; }
+    Index dim2() const { return d2; }
+    Index dim3() const { return d3; }
+    Index dim4() const { return d4; }
+
+    Matrix xfer()
+    {
+        Matrix x {dim1(), dim2(), dim3(), dim4(), this->data()};
+        this->base_xfer(x);
+        return x;
+    }
+
+    void range_check(Index n1, Index n2, Index n3, Index n4) const
+    {
+        if (n1 < 0 || d1 <= n1) error("4D range error: dimension 1");
+        if (n2 < 0 || d2 <= n2) error("4D range error: dimension 2");
+        if (n3 < 0 || d3 <= n3) error("4D range error: dimension 3");
+        if (n4 < 0 || d4 <= n4) error("4D range error: dimension 4");
+    }
+
+    // subscripting:
+    T& operator()(Index n1, Index n2, Index n3, Index n4)
+    {
+        range_check(n1,n2,n3,n4);
+        return this->elem[d2*d3*d4*n1+d3*d4*n2+d4*n3+n4];
+    }
+    const T& operator()(Index n1, Index n2, Index n3, Index n4) const
+    {
+        range_check(n1,n2,n3,n4);
+        return this->elem[d2*d3*d4*n1+d3*d4*n2+d4*n3+n4];
+    }
+
+    // slicing (return a row)
+          Row<T,3> operator[](Index n)       { return row(n); }
+    const Row<T,3> operator[](Index n) const { return row(n); }
+
+    Row<T,3> row(Index n)
+    {
+        range_check(n,0,0,0);
+        return Row<T,3>(d2,d3,d4,&this->elem[n*d2*d3*d4]);
+    }
+    const Row<T,3> row(Index n) const
+    {
+        range_check(n,0,0,0);
+        return Row<T,3>(d2,d3,d4,&this->elem[n*d2*d3*d4]);
+    }
+
+    Matrix& operator=(const T& c)
+    {
+        this->base_apply(Assign<T>(),c);
+        return *this;
+    }
+};
+
 }
 #endif
