@@ -5,15 +5,7 @@
 
 #include "Read_input.hpp"       // simple, handy reader
 #include "Timer.hpp"            // for timing solution
-constexpr int WIDTH = 5;        // for output alignment
-
-// placeholder function to allow boilerplate.cpp to compile
-auto solve_problem()
-{
-    auto count = 0;
-
-    return count;
-}
+constexpr int WIDTH = 6;        // for output alignment
 
 int main()
 try {
@@ -24,8 +16,8 @@ try {
               << "Front: " << input.front() << '\n'
               << "Back: " << input.back() << '\n';
 
-    const auto part1 = input.size();            // handy
-    const auto part2 = solve_problem();
+    const auto part1 = 0;
+    const auto part2 = 0;
     std::cout << std::setw(WIDTH) << "Part 1: " << part1 << '\n';
     std::cout << std::setw(WIDTH) << "Part 2: " << part2 << '\n';
 
